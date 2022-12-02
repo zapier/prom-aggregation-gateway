@@ -1,0 +1,7 @@
+# See https://github.com/helm/chart-testing#configuration
+remote: origin
+helm-extra-args: --kube-version v1.21.0
+additional-commands:
+  - "./hack/kubeconform.sh 1.21.0 {{ .Path }}"
+  - "./hack/kubeconform.sh 1.22.0 {{ .Path }}"
+  - "./hack/helm-unittest.sh {{ .Path }}"

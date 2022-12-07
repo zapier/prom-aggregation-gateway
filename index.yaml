@@ -2,6 +2,17 @@ apiVersion: v1
 entries:
   prom-aggregation-gateway:
   - apiVersion: v2
+    created: "2022-12-07T15:28:42.528654946Z"
+    digest: f334060ca383962f11d65e67f23607e58f6cec08028c1d28e53bd9f4d6d92031
+    home: https://github.com/zapier/prom-aggregation-gateway
+    maintainers:
+    - name: djeebus
+    - name: mplachter
+    name: prom-aggregation-gateway
+    urls:
+    - https://github.com/zapier/prom-aggregation-gateway/releases/download/prom-aggregation-gateway-0.3.0/prom-aggregation-gateway-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v2
     created: "2022-12-07T00:19:32.042650161Z"
     digest: cc8b6b4eb86d24c09ad98946310b8406e0a7424bfc6dddd96d3b83ef438304c4
     home: https://github.com/zapier/prom-aggregation-gateway
@@ -12,4 +23,4 @@ entries:
     urls:
     - https://github.com/zapier/prom-aggregation-gateway/releases/download/prom-aggregation-gateway-0.2.0/prom-aggregation-gateway-0.2.0.tgz
     version: 0.2.0
-generated: "2022-12-07T00:19:32.042783463Z"
+generated: "2022-12-07T15:28:42.528673346Z"

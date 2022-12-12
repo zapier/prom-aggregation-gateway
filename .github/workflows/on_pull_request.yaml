@@ -51,4 +51,5 @@ jobs:
       - name: run skaffold
         uses: hiberbee/github-action-skaffold@1.24.0
         with:
+          skaffold-version: 2.0.3
           command: run

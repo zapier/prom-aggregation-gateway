@@ -28,7 +28,7 @@ build:
     BUILD +build-helm
 
 release:
-    BUILD +release-binary
+    BUILD +release-binaries
     BUILD +build-docker
 
 go-deps:
@@ -84,7 +84,9 @@ build-binaries:
 release-binaries:
     FROM alpine:${ALPINE_VERSION}
 
-    COPY +build-binaries/_dist .
+    COPY . /src
+    WORKDIR /src
+    COPY +build-binaries/_dist dist
 
     # install github cli
     RUN FILE=ghcli.tgz \
@@ -102,7 +104,7 @@ release-binaries:
     RUN apk add --no-cache git
 
     ENV GH_TOKEN $token
-    RUN --push gh release create ${version} ./dist/*
+    RUN --push gh release upload ${version} ./dist/*
 
 lint-golang:
     FROM +go-deps

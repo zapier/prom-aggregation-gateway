@@ -1,16 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"log"
-	"net/http"
 	"sort"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	dto "github.com/prometheus/client_model/go"
 	"github.com/prometheus/common/expfmt"
 )
@@ -18,6 +15,14 @@ import (
 type metricFamily struct {
 	*dto.MetricFamily
 	lock sync.RWMutex
+}
+
+func (mf *metricFamily) Len() int {
+	mf.lock.RLock()
+	count := len(mf.Metric)
+	mf.lock.RUnlock()
+
+	return count
 }
 
 type aggregate struct {
@@ -33,21 +38,15 @@ type aggregateOptions struct {
 	metricTTLDuration *time.Duration
 }
 
-type aggregateOptionsFunc func(a *aggregate)
+type AggregateOptionsFunc func(a *aggregate)
 
-func AddIgnoredLabels(ignoredLabels ...string) aggregateOptionsFunc {
+func AddIgnoredLabels(ignoredLabels ...string) AggregateOptionsFunc {
 	return func(a *aggregate) {
 		a.options.ignoredLabels = ignoredLabels
 	}
 }
 
-func SetTTLMetricTime(duration *time.Duration) aggregateOptionsFunc {
-	return func(a *aggregate) {
-		a.options.metricTTLDuration = duration
-	}
-}
-
-func newAggregate(opts ...aggregateOptionsFunc) *aggregate {
+func newAggregate(opts ...AggregateOptionsFunc) *aggregate {
 	a := &aggregate{
 		families: map[string]*metricFamily{},
 		options: aggregateOptions{
@@ -142,16 +141,13 @@ func (a *aggregate) parseAndMerge(r io.Reader, job string) error {
 	return nil
 }
 
-func (a *aggregate) handleRender(c *gin.Context) {
-	contentType := expfmt.Negotiate(c.Request.Header)
-	c.Header("Content-Type", string(contentType))
-	enc := expfmt.NewEncoder(c.Writer, contentType)
-
+func (a *aggregate) render(enc expfmt.Encoder) {
 	a.familiesLock.RLock()
 	defer a.familiesLock.RUnlock()
 
-	metricNames := []string{}
+	var metricNames []string
 	metricTypeCounts := make(map[string]int)
+	metricFamilyCounts := make(map[string]int)
 	for name, family := range a.families {
 		metricNames = append(metricNames, name)
 		var typeName string
@@ -161,6 +157,7 @@ func (a *aggregate) handleRender(c *gin.Context) {
 			typeName = dto.MetricType_name[int32(*family.Type)]
 		}
 		metricTypeCounts[typeName]++
+		metricFamilyCounts[name] = family.Len()
 	}
 
 	sort.Strings(metricNames)
@@ -176,7 +173,10 @@ func (a *aggregate) handleRender(c *gin.Context) {
 		MetricCountByType.WithLabelValues(typeName).Set(float64(count))
 	}
 
-	// TODO reset gauges
+	MetricCountByFamily.Reset()
+	for familyName, count := range metricFamilyCounts {
+		MetricCountByFamily.WithLabelValues(familyName).Set(float64(count))
+	}
 }
 
 func (a *aggregate) encodeMetric(name string, enc expfmt.Encoder) bool {
@@ -188,23 +188,4 @@ func (a *aggregate) encodeMetric(name string, enc expfmt.Encoder) bool {
 		return true
 	}
 	return false
-}
-
-func (a *aggregate) handleInsert(c *gin.Context) {
-	job := c.Param("job")
-	// TODO: add logic to verify correct format of job label
-	if job == "" {
-		err := fmt.Errorf("must send in a valid job name, sent: %s", job)
-		log.Println(err)
-		http.Error(c.Writer, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	if err := a.parseAndMerge(c.Request.Body, job); err != nil {
-		log.Println(err)
-		http.Error(c.Writer, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	MetricPushes.WithLabelValues(job).Inc()
 }

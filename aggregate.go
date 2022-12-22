@@ -6,7 +6,6 @@ import (
 	"sort"
 	"strings"
 	"sync"
-	"time"
 
 	dto "github.com/prometheus/client_model/go"
 	"github.com/prometheus/common/expfmt"
@@ -34,8 +33,7 @@ type aggregate struct {
 type ignoredLabels []string
 
 type aggregateOptions struct {
-	ignoredLabels     ignoredLabels
-	metricTTLDuration *time.Duration
+	ignoredLabels ignoredLabels
 }
 
 type AggregateOptionsFunc func(a *aggregate)

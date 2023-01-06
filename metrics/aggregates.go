@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	dto "github.com/prometheus/client_model/go"
-	io_prometheus_client "github.com/prometheus/client_model/go"
 	"github.com/ulule/deepcopier"
 )
 
@@ -77,7 +76,7 @@ func (as *Aggregates) copyAggregateData() {
 				Metric: listOfMetric,
 			},
 		}
-		if *v.Type == io_prometheus_client.MetricType_GAUGE {
+		if *v.Type == dto.MetricType_GAUGE {
 			delete(as.writeAggregate.families, k)
 		}
 	}

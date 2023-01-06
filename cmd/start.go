@@ -18,12 +18,7 @@ var startCmd = &cobra.Command{
 
 func startFunc(cmd *cobra.Command, args []string) error {
 
-	apiCfg := routers.ApiRouterConfig{
-		CorsDomain: cfg.CorsDomain,
-		Accounts:   cfg.AuthUsers,
-	}
-
-	routers.RunServers(apiCfg, cfg.ApiListen, cfg.LifecycleListen)
+	routers.RunServers(cfg)
 
 	return nil
 }

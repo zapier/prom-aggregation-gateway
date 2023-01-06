@@ -16,10 +16,11 @@ var (
 )
 
 type Server struct {
-	ApiListen       string
-	LifecycleListen string
-	CorsDomain      string
-	AuthUsers       []string
+	ApiListen           string
+	LifecycleListen     string
+	CorsDomain          string
+	MetricBatchInterval int
+	AuthUsers           []string
 }
 
 const (

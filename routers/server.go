@@ -5,27 +5,34 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	promMetrics "github.com/slok/go-http-metrics/metrics/prometheus"
+	"github.com/zapier/prom-aggregation-gateway/config"
 	"github.com/zapier/prom-aggregation-gateway/metrics"
 )
 
-func RunServers(cfg ApiRouterConfig, apiListen string, lifecycleListen string) {
+func RunServers(cfg config.Server) {
 	sigChannel := make(chan os.Signal, 1)
 	signal.Notify(sigChannel, syscall.SIGTERM, syscall.SIGINT)
 
-	agg := metrics.NewAggregate()
+	apiCfg := ApiRouterConfig{
+		authAccounts: processAuthConfig(cfg.AuthUsers),
+		CorsDomain:   cfg.CorsDomain,
+	}
+
+	agg := metrics.NewAggregates(time.Duration(cfg.MetricBatchInterval))
 
 	promMetricsConfig := promMetrics.Config{
 		Registry: metrics.PromRegistry,
 	}
 
-	apiRouter := setupAPIRouter(cfg, agg, promMetricsConfig)
-	go runServer("api", apiRouter, apiListen)
+	apiRouter := setupAPIRouter(apiCfg, agg, promMetricsConfig)
+	go runServer("api", apiRouter, cfg.ApiListen)
 
 	lifecycleRouter := setupLifecycleRouter(metrics.PromRegistry)
-	go runServer("lifecycle", lifecycleRouter, lifecycleListen)
+	go runServer("lifecycle", lifecycleRouter, cfg.LifecycleListen)
 
 	// Block until an interrupt or term signal is sent
 	<-sigChannel

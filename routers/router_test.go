@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
@@ -18,7 +19,7 @@ import (
 )
 
 func setupTestRouter(cfg ApiRouterConfig) *gin.Engine {
-	agg := metrics.NewAggregate()
+	agg := metrics.NewAggregates(time.Microsecond * 100)
 	promConfig := promMetrics.Config{
 		Registry: prometheus.NewRegistry(),
 	}
@@ -111,6 +112,8 @@ some_counter{job="someJob"} 1
 			req, err = http.NewRequest("GET", "/metrics", nil)
 			require.NoError(t, err)
 
+			time.Sleep(time.Microsecond * 200)
+
 			w = httptest.NewRecorder()
 			router.ServeHTTP(w, req)
 
@@ -170,6 +173,8 @@ func TestAuthRouter(t *testing.T) {
 			// ---- retrieve metric ----
 			req, err = http.NewRequest("GET", "/metrics", nil)
 			require.NoError(t, err)
+
+			time.Sleep(time.Microsecond * 300)
 
 			w = httptest.NewRecorder()
 			router.ServeHTTP(w, req)

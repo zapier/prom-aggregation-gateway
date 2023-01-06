@@ -62,7 +62,7 @@ func (as *Aggregates) copyAggregateData() {
 			// if the time isn't pass the TTL time
 			// if time.Since(time.UnixMilli(*m.TimestampMs)) < *as.writeAggregate.options.metricTTLDuration || as.writeAggregate.options.metricTTLDuration != nil {
 			nMetric := &dto.Metric{}
-			deepcopier.Copy(m).To(nMetric)
+			_ = deepcopier.Copy(m).To(nMetric)
 			listOfMetric = append(listOfMetric, nMetric)
 			// }
 			// TODO: remove metric from writeAggregate as this could be a memory leak

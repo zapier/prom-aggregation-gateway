@@ -13,7 +13,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-X ${GO_MOD_PATH}/config.CommitS
 
 # generate clean, final image for end users
 FROM alpine:3.16
-COPY --from=builder /build/prom-aggregation-gateway .
+COPY --chown=nobody:nogroup --from=builder /build/prom-aggregation-gateway .
+
+USER 65534
 
 # executable
 ENTRYPOINT [ "./prom-aggregation-gateway" ]

@@ -33,6 +33,7 @@ func setupAPIRouter(cfg ApiRouterConfig, agg *metrics.Aggregate, promConfig prom
 	} else {
 		corsConfig.AllowAllOrigins = true
 	}
+	corsHandler := cors.New(corsConfig)
 	cfg.authAccounts = processAuthConfig(cfg.Accounts)
 
 	metricsMiddleware := middleware.New(middleware.Config{
@@ -47,13 +48,15 @@ func setupAPIRouter(cfg ApiRouterConfig, agg *metrics.Aggregate, promConfig prom
 
 	neededHandlers := []gin.HandlerFunc{}
 
+	neededHandlers = append(neededHandlers, corsHandler)
+
 	if len(cfg.Accounts) > 0 {
 		neededHandlers = append(neededHandlers, gin.BasicAuth(cfg.authAccounts))
 	}
 
 	r.GET("/metrics",
 		mGin.Handler("getMetrics", metricsMiddleware),
-		cors.New(corsConfig),
+		corsHandler,
 		agg.HandleRender,
 	)
 

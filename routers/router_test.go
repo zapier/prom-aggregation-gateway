@@ -181,3 +181,74 @@ func TestAuthRouter(t *testing.T) {
 		})
 	}
 }
+
+func TestCorsRouter(t *testing.T) {
+	tests := []struct {
+		name           string
+		path           string
+		method         string
+		corsDomain     string
+		origin         string
+		statusCode     int
+		expectedHeader string
+	}{
+		{
+			"GET returning header on all allowed origins",
+			"/metrics",
+			"GET",
+			"*",
+			"https://cors-domain",
+			200,
+			"*",
+		},
+		{
+			"PUT returning header on all allowed origins",
+			"/metrics",
+			"PUT",
+			"*",
+			"https://cors-domain",
+			202,
+			"*",
+		},
+		{
+			"GET returning 403 and not returning header on origin not in cors config",
+			"/metrics",
+			"GET",
+			"https://cors-domain",
+			"https://invalid-domain",
+			403,
+			"",
+		},
+		{
+			"PUT returning 403 and not returning header on origin not in cors config",
+			"/metrics",
+			"PUT",
+			"https://cors-domain",
+			"https://invalid-domain",
+			403,
+			"",
+		},
+	}
+
+	for idx, test := range tests {
+		t.Run(fmt.Sprintf("test #%d: %s", idx+1, test.name), func(t *testing.T) {
+			// setup router
+			router := setupTestRouter(ApiRouterConfig{CorsDomain: test.corsDomain})
+
+			buf := bytes.NewBufferString("")
+			req, err := http.NewRequest(test.method, test.path, buf)
+			require.NoError(t, err)
+
+			req.Header.Set("origin", test.origin)
+
+			// make request
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+
+			assert.Equal(t, test.statusCode, w.Code)
+
+			responseHeaders := w.Header()
+			assert.Equal(t, test.expectedHeader, responseHeaders.Get("access-control-allow-origin"))
+		})
+	}
+}

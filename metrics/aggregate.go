@@ -119,7 +119,9 @@ func (a *Aggregate) parseAndMerge(r io.Reader, labels []labelPair) error {
 	for name, family := range inFamilies {
 		// Sort labels in case source sends them inconsistently
 		for _, m := range family.Metric {
-			a.formatLabels(m, labels)
+			if err := a.formatLabels(m, labels); err != nil {
+				return err
+			}
 		}
 
 		if err := validateFamily(family); err != nil {

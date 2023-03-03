@@ -170,6 +170,7 @@ func validateFamily(f *dto.MetricFamily) error {
 		if err := lSet.Validate(); err != nil {
 			return err
 		}
+
 		fingerprint := lSet.Fingerprint()
 		if _, found := fingerprints[fingerprint]; found {
 			return fmt.Errorf("duplicate labels: %v", lSet)

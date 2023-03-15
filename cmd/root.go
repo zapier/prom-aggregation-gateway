@@ -24,6 +24,7 @@ func Execute() {
 
 	rootCmd.PersistentFlags().StringSliceVar(&cfg.AuthUsers, "AuthUsers", []string{}, "List of allowed auth users and their passwords comma separated\n Example: \"user1=pass1,user2=pass2\"")
 	rootCmd.PersistentFlags().StringVar(&cfg.ApiListen, "apiListen", ":80", "Listen for API requests on this host/port.")
+	rootCmd.PersistentFlags().IntVar(&cfg.MetricBatchInterval, "metricBatchInterval", 5, "The amount of seconds to batch the metrics collected")
 	rootCmd.PersistentFlags().StringVar(&cfg.LifecycleListen, "lifecycleListen", ":8888", "Listen for lifecycle requests (health, metrics) on this host/port")
 	rootCmd.PersistentFlags().StringVar(&cfg.CorsDomain, "cors", "*", "The 'Access-Control-Allow-Origin' value to be returned.")
 

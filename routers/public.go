@@ -26,7 +26,7 @@ func createHandlers(endpointName string,
 	return append(h, handlers...)
 }
 
-func setupAPIRouter(cfg ApiRouterConfig, agg *metrics.Aggregate, promConfig promMetrics.Config) *gin.Engine {
+func setupAPIRouter(cfg ApiRouterConfig, agg *metrics.Aggregates, promConfig promMetrics.Config) *gin.Engine {
 	corsConfig := cors.Config{}
 	if cfg.CorsDomain != "*" {
 		corsConfig.AllowOrigins = []string{cfg.CorsDomain}

@@ -47,7 +47,7 @@ func SetTTLMetricTime(duration *time.Duration) aggregateOptionsFunc {
 	}
 }
 
-func NewAggregate(opts ...aggregateOptionsFunc) *Aggregate {
+func newAggregate(opts ...aggregateOptionsFunc) *Aggregate {
 	a := &Aggregate{
 		families: map[string]*metricFamily{},
 		options: aggregateOptions{
@@ -142,12 +142,10 @@ func (a *Aggregate) parseAndMerge(r io.Reader, labels []labelPair) error {
 	return nil
 }
 
-func (a *Aggregate) HandleRender(c *gin.Context) {
+func (a *Aggregate) handleRender(c *gin.Context) {
 	contentType := expfmt.Negotiate(c.Request.Header)
 	c.Header("Content-Type", string(contentType))
 	a.encodeAllMetrics(c.Writer, contentType)
-
-	// TODO reset gauges
 }
 
 func (a *Aggregate) encodeAllMetrics(writer io.Writer, contentType expfmt.Format) {
@@ -197,8 +195,8 @@ func (a *Aggregate) encodeMetric(name string, enc expfmt.Encoder) bool {
 
 var ErrOddNumberOfLabelParts = errors.New("labels must be defined in pairs")
 
-func (a *Aggregate) HandleInsert(c *gin.Context) {
-	labelParts, jobName, err := parseLabelsInPath(c)
+func (a *Aggregate) handleInsert(c *gin.Context) {
+	labelParts, jobName, err := parseLabelsInPath(c.Param(labelParam))
 	if err != nil {
 		log.Println(err)
 		http.Error(c.Writer, err.Error(), http.StatusBadRequest)
@@ -219,14 +217,13 @@ type labelPair struct {
 	name, value string
 }
 
-func parseLabelsInPath(c *gin.Context) ([]labelPair, string, error) {
-	labelString := c.Param("labels")
-	labelString = strings.Trim(labelString, "/")
-	if labelString == "" {
+func parseLabelsInPath(labels string) ([]labelPair, string, error) {
+	labels = strings.Trim(labels, "/")
+	if labels == "" {
 		return nil, "", nil
 	}
 
-	labelParts := strings.Split(labelString, "/")
+	labelParts := strings.Split(labels, "/")
 	if len(labelParts)%2 != 0 {
 		return nil, "", ErrOddNumberOfLabelParts
 	}

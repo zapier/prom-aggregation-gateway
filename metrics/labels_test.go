@@ -13,7 +13,7 @@ var TestLabels = []labelPair{
 }
 
 func TestFormatLabels(t *testing.T) {
-	a := NewAggregate()
+	a := newAggregate()
 	a.options.ignoredLabels = []string{"ignore_me"}
 
 	m := &dto.Metric{
@@ -86,7 +86,7 @@ var testLabelTable = []struct {
 
 func BenchmarkFormatLabels(b *testing.B) {
 	for _, v := range testLabelTable {
-		a := NewAggregate(AddIgnoredLabels(v.ignoredLabels...))
+		a := newAggregate(AddIgnoredLabels(v.ignoredLabels...))
 		b.Run(fmt.Sprintf("metric_type_%s", v.inputName), func(b *testing.B) {
 			for n := 0; n < b.N; n++ {
 				a.formatLabels(v.m, TestLabels)

@@ -16,10 +16,11 @@ var (
 )
 
 type Server struct {
-	ApiListen       string
-	LifecycleListen string
-	CorsDomain      string
-	AuthUsers       []string
+	ApiListen           string
+	LifecycleListen     string
+	CorsDomain          string
+	MetricBatchInterval int
+	AuthUsers           []string
 }
 
 const (
@@ -60,7 +61,8 @@ func bindFlags(cmd *cobra.Command, v *viper.Viper) {
 		// Apply the viper config value to the flag when the flag is not set and viper has a value
 		if !f.Changed && v.IsSet(configName) {
 			val := v.Get(configName)
-			cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
+			_ = cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
+
 		}
 	})
 }

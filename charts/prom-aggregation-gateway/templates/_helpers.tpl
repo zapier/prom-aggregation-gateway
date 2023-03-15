@@ -18,6 +18,10 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
+{{- define "prom-aggregation-gateway.annotations" -}}
+{{ toYaml .Values.controller.annotations }}
+{{- end }}
+
 {{- define "prom-aggregation-gateway.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "prom-aggregation-gateway.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}

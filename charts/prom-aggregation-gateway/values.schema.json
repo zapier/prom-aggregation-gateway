@@ -42,6 +42,12 @@
         },
         "apiPort": {
           "type": "integer"
+        },
+        "annotations": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {"type":  "string"}
+          }
         }
       },
       "required": [

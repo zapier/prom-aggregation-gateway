@@ -35,7 +35,9 @@ func TestFormatLabels(t *testing.T) {
 
 	err = a.formatLabels(m, []labelPair{{"job", "test"}, {"thing3", "value3"}})
 
-	assert.Error(t, err)
+	if assert.Error(t, err) {
+		assert.Equal(t, err, fmt.Errorf("duplicate label job"))
+	}
 }
 
 var testLabelTable = []struct {

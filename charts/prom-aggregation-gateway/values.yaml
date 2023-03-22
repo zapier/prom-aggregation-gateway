@@ -13,6 +13,8 @@ controller:
   env:
     GIN_MODE: release
 
+  tolerations: []
+
 podMonitor:
   create: true
 

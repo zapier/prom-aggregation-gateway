@@ -38,3 +38,17 @@ tests:
     asserts:
       - isNull:
           path: spec.template.spec.containers[0].env
+  - it: can render tolerations
+    set:
+      controller:
+        tolerations:
+          - key: CriticalAddonsOnly
+            operator: Exists
+          - operator: Exists
+            effect: NoExecute
+    asserts:
+      - equal:
+          path: spec.template.spec.tolerations
+          value:
+            - {key: CriticalAddonsOnly, operator: Exists}
+            - {operator: Exists, effect: NoExecute}

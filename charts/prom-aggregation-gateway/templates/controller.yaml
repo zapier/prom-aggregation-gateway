@@ -56,3 +56,9 @@ spec:
           {{- with .Values.controller.resources }}
           resources: {{ . | toYaml | nindent 12 }}
           {{- end }}
+    {{- if .Values.controller.tolerations }}
+      tolerations:
+        {{- with .Values.controller.tolerations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    {{- end }}

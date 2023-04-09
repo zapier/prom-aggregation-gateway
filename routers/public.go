@@ -15,17 +15,6 @@ type ApiRouterConfig struct {
 	authAccounts gin.Accounts
 }
 
-func createHandlers(endpointName string,
-	metricMiddleware middleware.Middleware,
-	neededHandlers []gin.HandlerFunc,
-	handlers ...gin.HandlerFunc) []gin.HandlerFunc {
-	h := []gin.HandlerFunc{
-		mGin.Handler(endpointName, metricMiddleware),
-	}
-	h = append(h, neededHandlers...)
-	return append(h, handlers...)
-}
-
 func setupAPIRouter(cfg ApiRouterConfig, agg *metrics.Aggregate, promConfig promMetrics.Config) *gin.Engine {
 	corsConfig := cors.Config{}
 	if cfg.CorsDomain != "*" {
@@ -46,10 +35,7 @@ func setupAPIRouter(cfg ApiRouterConfig, agg *metrics.Aggregate, promConfig prom
 	// add metric middleware for NoRoute handler
 	r.NoRoute(mGin.Handler("noRoute", metricsMiddleware))
 
-	neededHandlers := []gin.HandlerFunc{}
-
-	neededHandlers = append(neededHandlers, corsHandler)
-
+	neededHandlers := []gin.HandlerFunc{corsHandler}
 	if len(cfg.Accounts) > 0 {
 		neededHandlers = append(neededHandlers, gin.BasicAuth(cfg.authAccounts))
 	}
@@ -60,13 +46,16 @@ func setupAPIRouter(cfg ApiRouterConfig, agg *metrics.Aggregate, promConfig prom
 		agg.HandleRender,
 	)
 
-	insertMethods := []func(string, ...gin.HandlerFunc) gin.IRoutes{r.POST, r.PUT}
-	insertPaths := []string{"/metrics", "/metrics/*labels"}
-	for _, method := range insertMethods {
-		for _, path := range insertPaths {
-			method(path, createHandlers("postMetrics", metricsMiddleware, neededHandlers, agg.HandleInsert)...)
-		}
+	postHandlers := []gin.HandlerFunc{
+		mGin.Handler("postMetrics", metricsMiddleware),
 	}
+	postHandlers = append(postHandlers, neededHandlers...)
+	postHandlers = append(postHandlers, agg.HandleInsert)
+
+	r.POST("/metrics", postHandlers...)
+	r.POST("/metrics/*labels", postHandlers...)
+	r.PUT("/metrics", postHandlers...)
+	r.PUT("/metrics/*labels", postHandlers...)
 
 	return r
 }

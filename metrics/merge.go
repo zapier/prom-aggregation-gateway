@@ -111,8 +111,14 @@ func mergeMetric(ty dto.MetricType, a, b *dto.Metric) *dto.Metric {
 		}
 
 	case dto.MetricType_SUMMARY:
-		// No way of merging summaries, abort.
-		return nil
+		// Treat Summary as a pair of counters, ignoring quantiles (which not all clients support anyway)
+		return &dto.Metric{
+			Label: a.Label,
+			Summary: &dto.Summary{
+				SampleCount: uint64ptr(*a.Summary.SampleCount + *b.Summary.SampleCount),
+				SampleSum:   float64ptr(*a.Summary.SampleSum + *b.Summary.SampleSum),
+			},
+		}
 	}
 
 	return nil

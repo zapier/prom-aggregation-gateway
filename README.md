@@ -5,7 +5,7 @@ Prometheus Aggregation Gateway is a push gateway that aggregates metrics for Pro
 * Counters where all labels match are added up.
 * Histograms are added up; if bucket boundaries are mismatched then the result has the union of all buckets and counts are given to the lowest bucket that fits.
 * Gauges are also added up (but this may not make any sense)
-* Summaries are discarded.
+* Summaries are treated as a pair of counters (quantile information is discarded if present).
 
 ## How to use
 

@@ -48,6 +48,9 @@
           "patternProperties": {
             ".*": {"type":  "string"}
           }
+        },
+        "tolerations": {
+          "type": "array"
         }
       },
       "required": [

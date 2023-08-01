@@ -3,7 +3,7 @@ arch: "amd64"
 platform: "linux"
 version: "${VERSION}"
 version_schema: none
-release: "${RELEASE}"
+release: "0"
 section: "default"
 provides:
 - prometheus-aggregation-gateway
@@ -14,6 +14,6 @@ vendor: "Zapier"
 homepage: "https://zapier.com"
 license: "MPL-2.0"
 contents:
-- src: ./opt/zapier/pag/prom-aggregation-gateway
-  dst: /opt/zapier/pag/prom-aggregation-gateway
+- src: ./prom-aggregation-gateway
+  dst: /usr/bin/prom-aggregation-gateway
 depends:

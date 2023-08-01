@@ -7,7 +7,6 @@ ARG commitSHA=""
 ARG version="dev"
 ARG PKG_PATH="github.com/zapier/prom-aggregation-gateway"
 
-ARG ALPINE_VERSION="3.17"
 ARG CHART_RELEASER_VERSION="1.4.1"
 ARG CHART_TESTING_VERSION="3.7.1"
 ARG GITHUB_CLI_VERSION="2.20.2"
@@ -35,7 +34,7 @@ release:
     BUILD +build-image
 
 go-deps:
-    FROM golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION}
+    FROM "golang:${GOLANG_VERSION}-bullseye"
 
     WORKDIR /src
     COPY go.mod go.sum /src
@@ -51,12 +50,49 @@ build-binary:
     SAVE ARTIFACT ./prom-aggregation-gateway
 
 build-image:
-    FROM alpine:${ALPINE_VERSION}
+    FROM bullseye
     COPY +build-binary/prom-aggregation-gateway .
     ENV GIN_MODE=release
     USER 65534
     ENTRYPOINT ["/prom-aggregation-gateway"]
     SAVE IMAGE --push ${image_name}:${version}
+
+build-rpm:
+    FROM centos:centos7
+
+    RUN yum install -y wget
+
+    ARG NFPM_VERSION="2.32.0"
+    RUN \
+        wget \
+            https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_Linux_x86_64.tar.gz \
+            --output-document nfpm.tgz \
+        && tar xvf nfpm.tgz \
+        && mv ./nfpm /bin \
+        && nfpm --version
+
+    WORKDIR /usr/src/pag
+
+    ENV VERSION=$version
+    ENV RELEASE=0
+    COPY spec/pag.yml .
+    COPY +build-binary/prom-aggregation-gateway .
+    RUN \
+        mkdir ./dist/ \
+        && nfpm pkg \
+            --packager rpm \
+            --config ./pag.yml \
+            --target ./dist/prom-aggregation-gateway-${VERSION}.rpm
+    SAVE ARTIFACT ./dist/ AS LOCAL ./dist/
+
+test-rpm:
+    FROM centos:centos7
+
+    ENV VERSION=$version
+    ENV RELEASE=0
+
+    COPY +build-rpm/dist/prom-aggregation-gateway-${VERSION}.rpm pag.rpm
+    RUN rpm -i pag.rpm && prom-aggregation-gateway version
 
 continuous-deploy:
     BUILD +build-helm
@@ -88,11 +124,12 @@ build-binaries:
     SAVE ARTIFACT _dist AS LOCAL ./dist
 
 release-binaries:
-    FROM alpine:${ALPINE_VERSION}
+    FROM bullseye
 
     COPY . /src
     WORKDIR /src
     COPY +build-binaries/_dist dist
+    COPY +build-rpm/dist dist
 
     # install github cli
     RUN FILE=ghcli.tgz \

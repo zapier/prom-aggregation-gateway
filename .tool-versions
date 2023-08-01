@@ -1,4 +1,5 @@
 # asdf plugin add earthly https://github.com/YR-ZR0/asdf-earthly
-earthly 0.6.30
+earthly 0.7.14
 golang 1.19.3
+nfpm 2.32.0
 skaffold 2.0.3

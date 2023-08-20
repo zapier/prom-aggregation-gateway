@@ -7,7 +7,8 @@ ARG commitSHA=""
 ARG version="dev"
 ARG PKG_PATH="github.com/zapier/prom-aggregation-gateway"
 
-ARG ALPINE_VERSION="3.17"
+ARG ALPINE_VERSION="3.17.5"
+ARG GOLANG_ALPINE_VERSION="3.17"
 ARG CHART_RELEASER_VERSION="1.4.1"
 ARG CHART_TESTING_VERSION="3.7.1"
 ARG GITHUB_CLI_VERSION="2.20.2"
@@ -35,7 +36,7 @@ release:
     BUILD +build-image
 
 go-deps:
-    FROM golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION}
+    FROM golang:${GOLANG_VERSION}-alpine${GOLANG_ALPINE_VERSION}
 
     WORKDIR /src
     COPY go.mod go.sum /src
@@ -57,6 +58,7 @@ build-image:
     USER 65534
     ENTRYPOINT ["/prom-aggregation-gateway"]
     SAVE IMAGE --push ${image_name}:${version}
+    SAVE IMAGE --push ${image_name}:latest
 
 continuous-deploy:
     BUILD +build-helm

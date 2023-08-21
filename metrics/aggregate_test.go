@@ -155,6 +155,16 @@ counter{b="b",a="a",ignore_me="ignored"} 2
 # TYPE counter counter
 counter{a="a",b="b",job="test"} 3
 `
+	summaryInput = `# HELP time_ms A summary
+# TYPE time_ms summary
+time_ms_sum{a="a",b="b"} 12.25
+time_ms_count{a="a",b="b"} 1.0
+`
+	summaryOutput = `# HELP time_ms A summary
+# TYPE time_ms summary
+time_ms_sum{a="a",b="b",job="test"} 24.5
+time_ms_count{a="a",b="b",job="test"} 2
+`
 )
 
 var testLabels = []labelPair{
@@ -176,6 +186,7 @@ func TestAggregate(t *testing.T) {
 		{"labelFields", labelFields1, labelFields2, labelFieldResult, []string{}},
 		{"reorderedLabels", reorderedLabels1, reorderedLabels2, reorderedLabelsResult, []string{}},
 		{"ignoredLabels", ignoredLabels1, ignoredLabels2, ignoredLabelsResult, []string{"ignore_me"}},
+		{"summary", summaryInput, summaryInput, summaryOutput, []string{}},
 	} {
 		t.Run(c.testName, func(t *testing.T) {
 			agg := NewAggregate(AddIgnoredLabels(c.ignoredLabels...))

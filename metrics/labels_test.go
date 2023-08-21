@@ -24,14 +24,20 @@ func TestFormatLabels(t *testing.T) {
 			{},
 		},
 	}
-	a.formatLabels(m, []labelPair{{"job", "test"}, {"thing3", "value3"}})
+	err := a.formatLabels(m, []labelPair{{"job", "test"}, {"thing3", "value3"}})
 
+	assert.Equal(t, err, nil)
 	assert.Equal(t, &dto.LabelPair{Name: strPtr("job"), Value: strPtr("test")}, m.Label[0])
 	assert.Equal(t, &dto.LabelPair{Name: strPtr("thing1"), Value: strPtr("value1")}, m.Label[1])
 	assert.Equal(t, &dto.LabelPair{Name: strPtr("thing2"), Value: strPtr("value2")}, m.Label[2])
 	assert.Equal(t, &dto.LabelPair{Name: strPtr("thing3"), Value: strPtr("value3")}, m.Label[3])
 	assert.Len(t, m.Label, 4)
 
+	err = a.formatLabels(m, []labelPair{{"job", "test"}, {"thing3", "value3"}})
+
+	if assert.Error(t, err) {
+		assert.Equal(t, err, fmt.Errorf("duplicate label job"))
+	}
 }
 
 var testLabelTable = []struct {

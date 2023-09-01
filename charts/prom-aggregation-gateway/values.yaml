@@ -17,6 +17,7 @@ controller:
 
 podMonitor:
   create: true
+  additionalLabels: {}
 
 service:
   create: true
@@ -27,3 +28,4 @@ service:
 
 serviceMonitor:
   create: true
+  additionalLabels: {}

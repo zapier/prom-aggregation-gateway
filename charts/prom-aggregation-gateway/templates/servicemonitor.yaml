@@ -3,6 +3,10 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ .Release.Name }}
+{{- with .Values.serviceMonitor.additionalLabels }}
+  labels:
+{{- toYaml . | nindent 4 }}
+{{- end }}
 spec:
   selector:
     matchLabels:

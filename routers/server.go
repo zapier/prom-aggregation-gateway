@@ -11,11 +11,11 @@ import (
 	"github.com/zapier/prom-aggregation-gateway/metrics"
 )
 
-func RunServers(cfg ApiRouterConfig, apiListen string, lifecycleListen string) {
+func RunServers(cfg ApiRouterConfig, apiListen string, lifecycleListen string, gaugeBehavior string) {
 	sigChannel := make(chan os.Signal, 1)
 	signal.Notify(sigChannel, syscall.SIGTERM, syscall.SIGINT)
 
-	agg := metrics.NewAggregate()
+	agg := metrics.NewAggregate(metrics.SetGaugeBehavior(gaugeBehavior))
 
 	promMetricsConfig := promMetrics.Config{
 		Registry: metrics.PromRegistry,

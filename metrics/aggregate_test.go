@@ -82,7 +82,28 @@ histogram_bucket{job="test",le="+Inf"} 9
 histogram_sum{job="test"} 7
 histogram_count{job="test"} 2
 `
-
+	wantReplace = `# HELP counter A counter
+# TYPE counter counter
+counter{job="test"} 60
+# HELP gauge A gauge
+# TYPE gauge gauge
+gauge{job="test"} 57
+# HELP histogram A histogram
+# TYPE histogram histogram
+histogram_bucket{job="test",le="1"} 0
+histogram_bucket{job="test",le="2"} 0
+histogram_bucket{job="test",le="3"} 3
+histogram_bucket{job="test",le="4"} 8
+histogram_bucket{job="test",le="5"} 9
+histogram_bucket{job="test",le="6"} 9
+histogram_bucket{job="test",le="7"} 9
+histogram_bucket{job="test",le="8"} 9
+histogram_bucket{job="test",le="9"} 9
+histogram_bucket{job="test",le="10"} 9
+histogram_bucket{job="test",le="+Inf"} 9
+histogram_sum{job="test"} 7
+histogram_count{job="test"} 2
+`
 	multilabel1 = `# HELP counter A counter
 # TYPE counter counter
 counter{a="a",b="b", ignore_label="ignore_value"} 1
@@ -121,6 +142,12 @@ ui_external_lib_loaded{name="mixpanel",loaded="true"} 1
 ui_external_lib_loaded{job="test",loaded="true",name="Intercom"} 2
 ui_external_lib_loaded{job="test",loaded="true",name="ga"} 2
 ui_external_lib_loaded{job="test",loaded="true",name="mixpanel"} 2
+`
+	gaugeOutputReplace = `# HELP ui_external_lib_loaded A gauge with entries in un-sorted order
+# TYPE ui_external_lib_loaded gauge
+ui_external_lib_loaded{job="test",loaded="true",name="Intercom"} 1
+ui_external_lib_loaded{job="test",loaded="true",name="ga"} 1
+ui_external_lib_loaded{job="test",loaded="true",name="mixpanel"} 1
 `
 	duplicateLabels = `
 # HELP ui_external_lib_loaded Test with duplicate values
@@ -179,17 +206,20 @@ func TestAggregate(t *testing.T) {
 		a, b          string
 		want          string
 		ignoredLabels []string
+		behavior      string
 	}{
-		{"simpleGauge", gaugeInput, gaugeInput, gaugeOutput, []string{}},
-		{"in", in1, in2, want, []string{}},
-		{"multilabel", multilabel1, multilabel2, multilabelResult, []string{"ignore_label"}},
-		{"labelFields", labelFields1, labelFields2, labelFieldResult, []string{}},
-		{"reorderedLabels", reorderedLabels1, reorderedLabels2, reorderedLabelsResult, []string{}},
-		{"ignoredLabels", ignoredLabels1, ignoredLabels2, ignoredLabelsResult, []string{"ignore_me"}},
-		{"summary", summaryInput, summaryInput, summaryOutput, []string{}},
+		{"simpleGauge", gaugeInput, gaugeInput, gaugeOutput, []string{}, "sum"},
+		{"simpleGaugeReplace", gaugeInput, gaugeInput, gaugeOutputReplace, []string{}, "replace"},
+		{"in", in1, in2, want, []string{}, "sum"},
+		{"inReplace", in1, in2, wantReplace, []string{}, "replace"},
+		{"multilabel", multilabel1, multilabel2, multilabelResult, []string{"ignore_label"}, "sum"},
+		{"labelFields", labelFields1, labelFields2, labelFieldResult, []string{}, "sum"},
+		{"reorderedLabels", reorderedLabels1, reorderedLabels2, reorderedLabelsResult, []string{}, "sum"},
+		{"ignoredLabels", ignoredLabels1, ignoredLabels2, ignoredLabelsResult, []string{"ignore_me"}, "sum"},
+		{"summary", summaryInput, summaryInput, summaryOutput, []string{}, "sum"},
 	} {
 		t.Run(c.testName, func(t *testing.T) {
-			agg := NewAggregate(AddIgnoredLabels(c.ignoredLabels...))
+			agg := NewAggregate(AddIgnoredLabels(c.ignoredLabels...), SetGaugeBehavior(c.behavior))
 
 			err := agg.parseAndMerge(strings.NewReader(c.a), testLabels)
 			require.NoError(t, err)

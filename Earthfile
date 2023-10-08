@@ -1,4 +1,4 @@
-VERSION 0.7
+VERSION 0.6
 
 ARG image_name="prom-aggregation-gateway"
 ARG token=""

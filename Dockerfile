@@ -1,5 +1,5 @@
 # builder image
-FROM golang:1.21.2-alpine3.18 AS builder
+FROM golang:1.21.3-alpine3.18 AS builder
 
 ARG COMMIT_SHA
 ARG VERSION_TAG

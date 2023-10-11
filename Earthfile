@@ -15,7 +15,7 @@ ARG GITHUB_CLI_VERSION="2.36.0"
 ARG GOLANG_VERSION="1.21.3"
 ARG HELM_UNITTEST_VERSION="0.3.5"
 ARG KUBECONFORM_VERSION="0.6.3"
-ARG STATICCHECK_VERSION="0.4.6"
+ARG STATICCHECK_VERSION="2023.1.6"
 
 test:
     BUILD +ci-golang
@@ -119,7 +119,7 @@ lint-golang:
 
     # install staticcheck
     RUN FILE=staticcheck.tgz \
-        && URL=https://github.com/dominikh/go-tools/releases/download/v${STATICCHECK_VERSION}/staticcheck_linux_amd64.tar.gz \
+        && URL=https://github.com/dominikh/go-tools/releases/download/${STATICCHECK_VERSION}/staticcheck_linux_amd64.tar.gz \
         && wget ${URL} \
             --output-document ${FILE} \
         && tar \

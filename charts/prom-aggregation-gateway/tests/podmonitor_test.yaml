@@ -1,0 +1,21 @@
+suite: PodMonitor tests
+
+templates: [podmonitor.yaml]
+
+tests:
+  - it: empty podmonitor labels by default
+    asserts:
+      - isEmpty:
+          path: metadata.labels
+  - it: can render podmonitor labels
+    set:
+      podMonitor:
+        additionalLabels:
+          hello: world
+          goodbye: moon
+    asserts:
+      - equal:
+          path: metadata.labels
+          value:
+            hello: world
+            goodbye: moon

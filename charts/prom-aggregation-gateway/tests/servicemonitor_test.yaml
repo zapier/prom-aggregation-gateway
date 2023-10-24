@@ -1,0 +1,21 @@
+suite: ServiceMonitor tests
+
+templates: [servicemonitor.yaml]
+
+tests:
+  - it: empty servicemonitor labels by default
+    asserts:
+      - isEmpty:
+          path: metadata.labels
+  - it: can render servicemonitor labels
+    set:
+      serviceMonitor:
+        additionalLabels:
+          hello: world
+          goodbye: moon
+    asserts:
+      - equal:
+          path: metadata.labels
+          value:
+            hello: world
+            goodbye: moon

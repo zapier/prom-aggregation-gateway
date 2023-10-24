@@ -91,6 +91,10 @@
       "properties": {
         "create": {
           "type": "boolean"
+        },
+        "additionalLabels": {
+          "type": "object",
+          "additionalProperties": true
         }
       }
     },
@@ -100,6 +104,10 @@
       "properties": {
         "create": {
           "type": "boolean"
+        },
+        "additionalLabels": {
+          "type": "object",
+          "additionalProperties": true
         }
       }
     }

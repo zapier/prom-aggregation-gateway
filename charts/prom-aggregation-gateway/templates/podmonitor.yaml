@@ -3,6 +3,10 @@ apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
   name: {{ .Release.Name }}-metrics
+{{- with .Values.podMonitor.additionalLabels }}
+  labels:
+{{- toYaml . | nindent 4 }}
+{{- end }}
 spec:
   selector:
     matchLabels:

@@ -93,6 +93,12 @@ helm repo update
 helm search repo pag -l
 ```
 
+### Helm Chart Unit Tests
+
+Helm plugin [quintush/helm-unittest](https://github.com/quintush/helm-unittest) is used for unit-testing.  
+After installing the plugin run `helm unittest <chart_dir>`. For Helm 3 support use `--helm3` flag.  
+More information on writing tests might be found in the plugin's project repo.
+
 ## Contributing
 To run the server you can run:
 

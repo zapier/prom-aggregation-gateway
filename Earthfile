@@ -7,15 +7,15 @@ ARG commitSHA=""
 ARG version="dev"
 ARG PKG_PATH="github.com/zapier/prom-aggregation-gateway"
 
-ARG ALPINE_VERSION="3.17.5"
-ARG GOLANG_ALPINE_VERSION="3.17"
+ARG ALPINE_VERSION="3.18.4"
+ARG GOLANG_ALPINE_VERSION="3.18"
 ARG CHART_RELEASER_VERSION="1.4.1"
 ARG CHART_TESTING_VERSION="3.7.1"
-ARG GITHUB_CLI_VERSION="2.20.2"
-ARG GOLANG_VERSION="1.19.3"
+ARG GITHUB_CLI_VERSION="2.36.0"
+ARG GOLANG_VERSION="1.21.3"
 ARG HELM_UNITTEST_VERSION="0.2.8"
 ARG KUBECONFORM_VERSION="0.5.0"
-ARG STATICCHECK_VERSION="0.3.3"
+ARG STATICCHECK_VERSION="2023.1.6"
 
 test:
     BUILD +ci-golang
@@ -119,7 +119,7 @@ lint-golang:
 
     # install staticcheck
     RUN FILE=staticcheck.tgz \
-        && URL=https://github.com/dominikh/go-tools/releases/download/v${STATICCHECK_VERSION}/staticcheck_linux_amd64.tar.gz \
+        && URL=https://github.com/dominikh/go-tools/releases/download/${STATICCHECK_VERSION}/staticcheck_linux_amd64.tar.gz \
         && wget ${URL} \
             --output-document ${FILE} \
         && tar \

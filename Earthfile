@@ -31,6 +31,10 @@ build:
     BUILD +build-image
     BUILD +build-helm
 
+release-multiarch:
+    BUILD +release-binaries-multiarch
+    BUILD +build-image-multiarch
+
 release:
     BUILD +release-binaries
     BUILD +build-image
@@ -50,6 +54,9 @@ build-binary:
     RUN go build -ldflags "-X ${PKG_PATH}/config.Version=${version} -X ${PKG_PATH}/config.CommitSHA=${commitSHA}" -o prom-aggregation-gateway .
 
     SAVE ARTIFACT ./prom-aggregation-gateway
+
+build-image-multiarch:
+    BUILD --platform=linux/arm64 --platform=linux/amd64 +build-image
 
 build-image:
     FROM alpine:${ALPINE_VERSION}
@@ -88,6 +95,9 @@ build-binaries:
             .
 
     SAVE ARTIFACT _dist AS LOCAL ./dist
+
+release-binaries-multiarch:
+    BUILD --platform=linux/arm64 --platform=linux/amd64 +release-binaries
 
 release-binaries:
     FROM alpine:${ALPINE_VERSION}

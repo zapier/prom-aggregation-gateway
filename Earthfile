@@ -32,7 +32,7 @@ build:
     BUILD +build-helm
 
 release-multiarch:
-    BUILD +release-binaries-multiarch
+    BUILD +release-binaries
     BUILD +build-image-multiarch
 
 release:
@@ -95,9 +95,6 @@ build-binaries:
             .
 
     SAVE ARTIFACT _dist AS LOCAL ./dist
-
-release-binaries-multiarch:
-    BUILD --platform=linux/arm64 --platform=linux/amd64 +release-binaries
 
 release-binaries:
     FROM alpine:${ALPINE_VERSION}

@@ -14,8 +14,7 @@ graph TD
   build-image-multiarch --> build-image
   release --> build-image
   release --> release-binaries
-  release-multiarch --> release-binaries-multiarch
-  release-binaries-multiarch --> release-binaries
+  release-multiarch --> release-binaries
   release-multiarch --> build-image-multiarch
   release-binaries --> build-binaries
 ```

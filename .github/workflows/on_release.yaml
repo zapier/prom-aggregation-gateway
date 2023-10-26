@@ -35,7 +35,7 @@ jobs:
         run: |
           earthly \
             --push \
-            +release-binaries \
+            +release-binaries-multiarch \
             --version=${{ env.RELEASE_VERSION }} \
             --commitSHA=${{ env.SHORT_SHA }} \
             --token ${{ secrets.GITHUB_TOKEN }}
@@ -69,7 +69,7 @@ jobs:
         run: |
           earthly \
             --push \
-            +build-image \
+            +build-image-multiarch \
             --version=${{ env.RELEASE_VERSION }} \
             --commitSHA=${{ env.SHORT_SHA }} \
             --image_name=ghcr.io/${{ github.repository_owner }}/prom-aggregation-gateway

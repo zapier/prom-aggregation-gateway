@@ -21,6 +21,8 @@ podMonitor:
   create: true
   additionalLabels: {}
 
+podAnnotations: {}
+
 service:
   create: true
   annotations: {}

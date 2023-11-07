@@ -20,6 +20,10 @@ spec:
   {{- end }}
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
         {{- include "prom-aggregation-gateway.selectorLabels" . | nindent 8 }}
     spec:

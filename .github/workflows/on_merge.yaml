@@ -19,4 +19,8 @@ jobs:
         with: { version: "v${{ env.EARTHLY_TOOL_VERSION }}" }
 
       - name: run continuous deployment actions
-        run: earthly --push +continuous-deploy --token ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./earthly \
+            --push \
+            +continuous-deploy \
+              --token ${{ secrets.GITHUB_TOKEN }}

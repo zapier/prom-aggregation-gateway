@@ -1,21 +1,13 @@
-VERSION 0.6
+VERSION 0.8
 
-ARG image_name="prom-aggregation-gateway"
-ARG token=""
+ARG --global token=""
 
-ARG commitSHA=""
-ARG version="dev"
-ARG PKG_PATH="github.com/zapier/prom-aggregation-gateway"
+ARG --global commitSHA=""
+ARG --global version="dev"
+ARG --global PKG_PATH="github.com/zapier/prom-aggregation-gateway"
 
-ARG ALPINE_VERSION="3.18.4"
-ARG GOLANG_ALPINE_VERSION="3.18"
-ARG CHART_RELEASER_VERSION="1.4.1"
-ARG CHART_TESTING_VERSION="3.7.1"
-ARG GITHUB_CLI_VERSION="2.36.0"
-ARG GOLANG_VERSION="1.21.3"
-ARG HELM_UNITTEST_VERSION="0.2.8"
-ARG KUBECONFORM_VERSION="0.5.0"
-ARG STATICCHECK_VERSION="2023.1.6"
+ARG --global ALPINE_VERSION="3.18"
+ARG --global --required GOLANG_VERSION
 
 test:
     BUILD +ci-golang
@@ -40,7 +32,7 @@ release:
     BUILD +build-image
 
 go-deps:
-    FROM golang:${GOLANG_VERSION}-alpine${GOLANG_ALPINE_VERSION}
+    FROM golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION}
 
     WORKDIR /src
     COPY go.mod go.sum /src
@@ -64,6 +56,8 @@ build-image:
     ENV GIN_MODE=release
     USER 65534
     ENTRYPOINT ["/prom-aggregation-gateway"]
+
+    ARG image_name="prom-aggregation-gateway"
     SAVE IMAGE --push ${image_name}:${version}
     SAVE IMAGE --push ${image_name}:latest
 
@@ -104,6 +98,7 @@ release-binaries:
     COPY +build-binaries/_dist dist
 
     # install github cli
+    ARG --required GITHUB_CLI_VERSION
     RUN FILE=ghcli.tgz \
         && URL=https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.tar.gz \
         && wget ${URL} \
@@ -125,6 +120,7 @@ lint-golang:
     FROM +go-deps
 
     # install staticcheck
+    ARG --required STATICCHECK_VERSION
     RUN FILE=staticcheck.tgz \
         && URL=https://github.com/dominikh/go-tools/releases/download/${STATICCHECK_VERSION}/staticcheck_linux_amd64.tar.gz \
         && wget ${URL} \
@@ -150,9 +146,12 @@ test-golang:
     RUN go test .
 
 test-helm:
+    ARG --required CHART_TESTING_VERSION
+
     FROM quay.io/helmpack/chart-testing:v${CHART_TESTING_VERSION}
 
     # install kubeconform
+    ARG --required KUBECONFORM_VERSION
     RUN FILE=kubeconform.tgz \
         && URL=https://github.com/yannh/kubeconform/releases/download/v${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz \
         && wget ${URL} \
@@ -164,6 +163,7 @@ test-helm:
             --file ${FILE} \
         && kubeconform -v
 
+    ARG HELM_UNITTEST_VERSION="0.2.8"
     RUN apk add --no-cache bash git \
         && helm plugin install --version "${HELM_UNITTEST_VERSION}" https://github.com/quintush/helm-unittest \
         && helm unittest --help
@@ -175,6 +175,8 @@ test-helm:
     RUN ct --config ./.github/ct.yaml lint ./charts
 
 build-helm:
+    ARG --required CHART_RELEASER_VERSION
+
     FROM quay.io/helmpack/chart-releaser:v${CHART_RELEASER_VERSION}
 
     ARG token

@@ -7,7 +7,7 @@ build:
   artifacts:
     - image: prom-aggregation-gateway
       custom:
-        buildCommand: ./earthly +build-image --version=$IMAGE_TAG --image_name=$IMAGE_REPO
+        buildCommand: EARTHLY_DISABLE_REMOTE_REGISTRY_PROXY=true ./earthly +build-image --version=$IMAGE_TAG --image_name=$IMAGE_REPO --no-satellite
   tagPolicy:
     customTemplate:
       template: dev

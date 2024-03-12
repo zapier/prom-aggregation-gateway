@@ -22,6 +22,9 @@ jobs:
       - uses: earthly/actions-setup@v1
         with: { version: "v${{ env.EARTHLY_TOOL_VERSION }}" }
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       # intentionally avoiding --push, this is just
       # to test the command
       - run: ./earthly +build-image-multiarch

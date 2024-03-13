@@ -1,4 +1,9 @@
-# asdf plugin add earthly https://github.com/YR-ZR0/asdf-earthly
-earthly 0.6.30
+earthly 0.8.5
+github-cli 2.36.0
 golang 1.21.3
-skaffold 2.0.3
+helm-cr 1.4.1
+helm-ct 3.7.1
+kubeconform 0.5.0
+minikube 1.32.0
+skaffold 2.10.1
+staticcheck 2023.1.6

@@ -20,6 +20,7 @@ type Server struct {
 	LifecycleListen string
 	CorsDomain      string
 	AuthUsers       []string
+	GaugeBehavior   string
 }
 
 const (

@@ -79,6 +79,23 @@ Container images are published here:
 
 https://ghcr.io/zapier/prom-aggregation-gateway
 
+## Building from source
+
+Follow these steps to create a RPM package. These steps have been tested to
+work on CentOS 7.8.2003 with Go 1.18.10 and nfpm 2.29.0.
+
+```bash
+./build.sh
+```
+
+Use env vars to over-ride version and release:
+
+```bash
+VERSION=0.8 RELEASE=0 ./build.sh
+```
+
+The package gets created inside the `output/release` directory.
+
 ## Helm Chart
 
 Helm Charts are published here:

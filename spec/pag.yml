@@ -1,0 +1,19 @@
+name: "prometheus-aggregation-gateway"
+arch: "amd64"
+platform: "linux"
+version: "${VERSION}"
+version_schema: none
+release: "${RELEASE}"
+section: "default"
+provides:
+- prometheus-aggregation-gateway
+maintainer: "PAG <noreply@nobody.com>"
+description: |
+  Prometheus Aggregation Gateway aggregates metrics
+vendor: "Zapier"
+homepage: "https://zapier.com"
+license: "MPL-2.0"
+contents:
+- src: ./opt/zapier/pag/prom-aggregation-gateway
+  dst: /opt/zapier/pag/prom-aggregation-gateway
+depends:

@@ -6,7 +6,7 @@ ARG --global commitSHA=""
 ARG --global version="dev"
 ARG --global PKG_PATH="github.com/zapier/prom-aggregation-gateway"
 
-ARG --global ALPINE_VERSION="3.18"
+ARG --global ALPINE_VERSION="3.19"
 ARG --global --required GOLANG_VERSION
 
 test:

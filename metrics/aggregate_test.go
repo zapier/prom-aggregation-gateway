@@ -172,7 +172,7 @@ var testLabels = []labelPair{
 }
 
 func TestAggregate(t *testing.T) {
-	contentType := expfmt.FmtText
+	contentType := expfmt.NewFormat(expfmt.TypeTextPlain)
 
 	for _, c := range []struct {
 		testName      string

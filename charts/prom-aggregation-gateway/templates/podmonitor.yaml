@@ -2,7 +2,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
-  name: {{ .Release.Name }}-metrics
+  name: {{ include "prom-aggregation-gateway.fullname" . }}
 {{- with .Values.podMonitor.additionalLabels }}
   labels:
 {{- toYaml . | nindent 4 }}

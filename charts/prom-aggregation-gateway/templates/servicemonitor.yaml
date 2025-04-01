@@ -2,7 +2,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ include "prom-aggregation-gateway.fullname" . }}
 {{- with .Values.serviceMonitor.additionalLabels }}
   labels:
 {{- toYaml . | nindent 4 }}

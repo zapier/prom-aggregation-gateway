@@ -26,3 +26,16 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/name: {{ include "prom-aggregation-gateway.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some k8s name fields are limited to this (by the DNS naming spec).
+If the release name contains a chart name, it will be used as a full name.
+*/}}
+{{- define "prom-aggregation-gateway.fullname" -}}
+{{- if .Values.nameOverride }}
+{{- .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-prom-aggregator-gateway" .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}

@@ -64,6 +64,9 @@
     "nameOverride": {
       "type": "string"
     },
+    "fullnameOverride": {
+      "type": "string"
+    },
     "service": {
       "type": "object",
       "additionalProperties": false,

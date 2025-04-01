@@ -35,3 +35,4 @@ serviceMonitor:
   additionalLabels: {}
 
 nameOverride: ""
+fullnameOverride: ""

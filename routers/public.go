@@ -2,6 +2,7 @@ package routers
 
 import (
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	promMetrics "github.com/slok/go-http-metrics/metrics/prometheus"
 	"github.com/slok/go-http-metrics/middleware"
@@ -31,6 +32,7 @@ func setupAPIRouter(cfg ApiRouterConfig, agg *metrics.Aggregate, promConfig prom
 
 	r := gin.New()
 	r.RedirectTrailingSlash = false
+	r.Use(gzip.Gzip(gzip.DefaultCompression, gzip.WithDecompressFn(gzip.DefaultDecompressHandle)))
 
 	// add metric middleware for NoRoute handler
 	r.NoRoute(mGin.Handler("noRoute", metricsMiddleware))

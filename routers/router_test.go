@@ -2,6 +2,7 @@ package routers
 
 import (
 	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -99,6 +100,43 @@ some_counter{job="someJob"} 1
 			// setup request
 			buf := bytes.NewBufferString(test.metric)
 			req, err := http.NewRequest("PUT", test.path, buf)
+			require.NoError(t, err)
+
+			// make request
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+
+			assert.Equal(t, 202, w.Code)
+
+			// ---- retrieve metric ----
+			req, err = http.NewRequest("GET", "/metrics", nil)
+			require.NoError(t, err)
+
+			w = httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+
+			assert.Equal(t, 200, w.Code)
+			body := w.Body.String()
+			assert.Equal(t, test.expected, body)
+		})
+	}
+
+	for idx, test := range tests {
+		t.Run(fmt.Sprintf("gzip encoded test #%d: %s", idx+1, test.name), func(t *testing.T) {
+			// setup router
+			router := setupTestRouter(ApiRouterConfig{CorsDomain: "https://cors-domain"})
+
+			// ---- insert metric ----
+			// setup gzipped request
+			buf := &bytes.Buffer{}
+			gz := gzip.NewWriter(buf)
+			if _, err := gz.Write([]byte(test.metric)); err != nil {
+				gz.Close()
+				t.Fatal(err)
+			}
+			gz.Close()
+			req, err := http.NewRequest("PUT", test.path, buf)
+			req.Header.Add("Content-Encoding", "gzip")
 			require.NoError(t, err)
 
 			// make request

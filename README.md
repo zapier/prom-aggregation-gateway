@@ -40,6 +40,14 @@ push_to_gateway('localhost', job='my_job_name', registry=registry)
 
 Then have your Prometheus scrape metrics at `/metrics`.
 
+### Request compression
+
+The body of a POST or PUT request may be gzip-compressed. Add the header `Content-Encoding: gzip` to do so:
+
+```bash
+echo 'http_requests_total{method="post",code="200"} 1027' | gzip | curl -H 'Content-Enconding: gzip' --data-binary @- http://localhost/metrics/
+```
+
 ### Running the service
 
 

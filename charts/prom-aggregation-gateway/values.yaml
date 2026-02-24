@@ -1,3 +1,4 @@
+nameOverride: ""
 controller:
   image:
     repository: ghcr.io/zapier/prom-aggregation-gateway

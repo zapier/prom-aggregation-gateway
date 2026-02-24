@@ -54,6 +54,12 @@
         },
         "tolerations": {
           "type": "array"
+        },
+        "priorityClassName": {
+          "type": "string"
+        },
+	"imagePullSecrets": {
+          "type": "array"
         }
       },
       "required": [

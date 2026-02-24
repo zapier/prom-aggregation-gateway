@@ -60,6 +60,13 @@ spec:
           {{- with .Values.controller.resources }}
           resources: {{ . | toYaml | nindent 12 }}
           {{- end }}
+      {{- with .Values.controller.priorityClassName }}
+      priorityClassName: {{ . | quote }}
+      {{- end }}
+      {{- with .Values.controller.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.controller.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

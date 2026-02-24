@@ -1,0 +1,26 @@
+{{- if .Values.networkPolicy }}
+apiVersion: {{ include "prom-aggregation-gateway.networkPolicy.apiVersion" . }}
+kind: NetworkPolicy
+metadata:
+  labels:
+    {{- include "prom-aggregation-gateway.labels" . | nindent 4 }}
+  {{- if .Values.networkPolicy.customSelectors }}
+  name: ingress-allow-customselector-{{ template "prom-aggregation-gateway.name" . }}
+  {{- else if .Values.networkPolicy.allowAll }}
+  name: ingress-allow-all-{{ template "prom-aggregation-gateway.name" . }}
+  {{- else -}}
+  {{- fail "One of `allowAll` or `customSelectors` must be specified." }}
+  {{- end }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "prom-aggregation-gateway.selectorLabels" . | nindent 6 }}
+  ingress:
+    - ports:
+      - port: {{ .Values.controller.apiPort }}
+      - port: {{ .Values.controller.lifecyclePort }}
+      {{- with .Values.networkPolicy.customSelectors }}
+      from:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

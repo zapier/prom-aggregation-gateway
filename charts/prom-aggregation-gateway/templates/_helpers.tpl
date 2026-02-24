@@ -26,3 +26,14 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/name: {{ include "prom-aggregation-gateway.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Return the appropriate apiVersion for networkpolicy.
+*/}}
+{{- define "prom-aggregation-gateway.networkPolicy.apiVersion" -}}
+{{- if semverCompare ">=1.4-0, <1.7-0" .Capabilities.KubeVersion.GitVersion }}
+{{- print "extensions/v1beta1" }}
+{{- else if semverCompare "^1.7-0" .Capabilities.KubeVersion.GitVersion }}
+{{- print "networking.k8s.io/v1" }}
+{{- end }}
+{{- end }}

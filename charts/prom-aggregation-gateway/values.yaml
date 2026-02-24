@@ -17,6 +17,9 @@ controller:
 
   nodeSelector: {}
 
+  # Optional pod imagePullSecrets
+  imagePullSecrets: []
+
 podMonitor:
   create: true
   additionalLabels: {}

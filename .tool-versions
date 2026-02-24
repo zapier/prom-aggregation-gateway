@@ -1,5 +1,5 @@
 github-cli 2.36.0
-golang 1.21.3
+golang 1.25.7
 helm-cr 1.4.1
 helm-ct 3.7.1
 kubeconform 0.5.0

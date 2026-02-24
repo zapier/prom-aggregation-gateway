@@ -1,4 +1,4 @@
-FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.21.3-alpine AS builder
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.25.7-alpine AS builder
 
 ARG VERSION=dev
 ARG COMMIT_SHA=""

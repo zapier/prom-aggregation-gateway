@@ -17,7 +17,8 @@ import (
 
 type metricFamily struct {
 	*dto.MetricFamily
-	lock sync.RWMutex
+	lock    sync.RWMutex
+	options *aggregateOptions
 }
 
 type Aggregate struct {
@@ -28,9 +29,17 @@ type Aggregate struct {
 
 type ignoredLabels []string
 
+type gaugeBehavior string
+
+const (
+	sumBehavior     gaugeBehavior = "sum"
+	replaceBehavior               = "replace"
+)
+
 type aggregateOptions struct {
 	ignoredLabels     ignoredLabels
 	metricTTLDuration *time.Duration
+	gaugeBehavior     gaugeBehavior
 }
 
 type aggregateOptionsFunc func(a *Aggregate)
@@ -44,6 +53,16 @@ func AddIgnoredLabels(ignoredLabels ...string) aggregateOptionsFunc {
 func SetTTLMetricTime(duration *time.Duration) aggregateOptionsFunc {
 	return func(a *Aggregate) {
 		a.options.metricTTLDuration = duration
+	}
+}
+
+func SetGaugeBehavior(behavior string) aggregateOptionsFunc {
+	return func(a *Aggregate) {
+		if behavior == replaceBehavior {
+			a.options.gaugeBehavior = replaceBehavior
+		} else {
+			a.options.gaugeBehavior = sumBehavior
+		}
 	}
 }
 
@@ -91,7 +110,7 @@ func (a *Aggregate) setFamilyOrGetExistingFamily(familyName string, family *dto.
 	defer a.familiesLock.Unlock()
 	existingFamily, ok := a.families[familyName]
 	if !ok {
-		a.families[familyName] = &metricFamily{MetricFamily: family}
+		a.families[familyName] = &metricFamily{MetricFamily: family, options: &a.options}
 		return nil
 	}
 	return existingFamily

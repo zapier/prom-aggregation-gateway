@@ -65,6 +65,7 @@ Flags:
                                   Example: "user1=pass1,user2=pass2"
       --apiListen string         Listen for API requests on this host/port. (default ":80")
       --cors string              The 'Access-Control-Allow-Origin' value to be returned. (default "*")
+      --gaugeBehavior string     How gauges are aggregated (sum or replace). (default "sum")
   -h, --help                     help for prom-aggregation-gateway
       --lifecycleListen string   Listen for lifecycle requests (health, metrics) on this host/port (default ":8888")
 
@@ -72,6 +73,15 @@ Use "prom-aggregation-gateway [command] --help" for more information about a com
 ```
 
 Any flags you see above can also be set by `ENV_VARIABLES`. ENV_VARS must have a prefix of `PAG_`, for example `PAG_AUTHUSERS=user1=pass1,user2=pass2` will start the service with basic auth. If an ENV_VARIABLE is set than it will be used over a CLI argument passed to the service.
+
+### Gauge Behavior
+
+Gauges can be aggregated in two ways:
+
+1. `sum` (default) - just like counters, by summing the values received.
+2. `replace` - every new value replaces the current value, scrape will always see the latest value.
+
+set this with the flag `--gaugeBehavior=XXX` or as an env var `PAG_GAUGEBEHAVIOR=XXX`.
 
 ## Ready-built images
 

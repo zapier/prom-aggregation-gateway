@@ -23,7 +23,7 @@ func startFunc(cmd *cobra.Command, args []string) error {
 		Accounts:   cfg.AuthUsers,
 	}
 
-	routers.RunServers(apiCfg, cfg.ApiListen, cfg.LifecycleListen)
+	routers.RunServers(apiCfg, cfg.ApiListen, cfg.LifecycleListen, cfg.GaugeBehavior)
 
 	return nil
 }

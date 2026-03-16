@@ -26,6 +26,7 @@ func Execute() {
 	rootCmd.PersistentFlags().StringVar(&cfg.ApiListen, "apiListen", ":80", "Listen for API requests on this host/port.")
 	rootCmd.PersistentFlags().StringVar(&cfg.LifecycleListen, "lifecycleListen", ":8888", "Listen for lifecycle requests (health, metrics) on this host/port")
 	rootCmd.PersistentFlags().StringVar(&cfg.CorsDomain, "cors", "*", "The 'Access-Control-Allow-Origin' value to be returned.")
+	rootCmd.PersistentFlags().StringVar(&cfg.GaugeBehavior, "gaugeBehavior", "sum", "How gauges are aggregated (sum or replace).")
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

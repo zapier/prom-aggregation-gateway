@@ -71,7 +71,7 @@ func mergeBuckets(a, b []*dto.Bucket) []*dto.Bucket {
 	return output
 }
 
-func mergeMetric(ty dto.MetricType, a, b *dto.Metric) *dto.Metric {
+func mergeMetric(ty dto.MetricType, a, b *dto.Metric, options *aggregateOptions) *dto.Metric {
 	switch ty {
 	case dto.MetricType_COUNTER:
 		return &dto.Metric{
@@ -82,9 +82,14 @@ func mergeMetric(ty dto.MetricType, a, b *dto.Metric) *dto.Metric {
 		}
 
 	case dto.MetricType_GAUGE:
-		// No very meaningful way for us to merge gauges.  We'll sum them
-		// and clear out any gauges on scrape, as a best approximation, but
-		// this relies on client pushing with the same interval as we scrape.
+		if options.gaugeBehavior == replaceBehavior {
+			return &dto.Metric{
+				Label: a.Label,
+				Gauge: &dto.Gauge{
+					Value: float64ptr(*b.Gauge.Value),
+				},
+			}
+		}
 		return &dto.Metric{
 			Label: a.Label,
 			Gauge: &dto.Gauge{
@@ -143,7 +148,7 @@ func (mf *metricFamily) mergeFamily(b *dto.MetricFamily) error {
 			newMetric = append(newMetric, b.Metric[j])
 			j++
 		} else {
-			merged := mergeMetric(*mf.Type, mf.Metric[i], b.Metric[j])
+			merged := mergeMetric(*mf.Type, mf.Metric[i], b.Metric[j], mf.options)
 			if merged != nil {
 				newMetric = append(newMetric, merged)
 			}

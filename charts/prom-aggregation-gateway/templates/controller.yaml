@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: {{ .Values.controller.type }}
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ include "prom-aggregation-gateway.fullname" . }}
   labels:
     {{- include "prom-aggregation-gateway.labels" . | nindent 4 }}
     {{- if .Values.controller.labels }}

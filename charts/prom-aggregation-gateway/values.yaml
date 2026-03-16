@@ -33,3 +33,6 @@ service:
 serviceMonitor:
   create: true
   additionalLabels: {}
+
+nameOverride: ""
+fullnameOverride: ""
